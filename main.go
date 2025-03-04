@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"golang-restaurant-management/database"
-	"golang-restaurant-management/middleware"
-	"golang-restaurant-management/routes"
+	database "golang-restaurant-management/database"
+	middleware "golang-restaurant-management/middleware"
+	routes "golang-restaurant-management/routes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
