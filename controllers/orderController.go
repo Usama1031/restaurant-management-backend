@@ -47,11 +47,11 @@ func GetOrder() gin.HandlerFunc {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 
-		orderID := c.Param("order_id")
+		orderId := c.Param("order_id")
 
 		var order models.Order
 
-		err := orderCollection.FindOne(ctx, bson.M{"order_id": orderID}).Decode(&order)
+		err := orderCollection.FindOne(ctx, bson.M{"order_id": orderId}).Decode(&order)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Order ID does not exist!"})
 		}
