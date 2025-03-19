@@ -106,6 +106,11 @@ func CreateInvoice() gin.HandlerFunc {
 			return
 		}
 
+		if invoice.Order_id == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Order Id is a required field!"})
+			return
+		}
+
 		err := orderCollection.FindOne(ctx, bson.M{"order_id": invoice.Order_id}).Decode(&order)
 
 		if err != nil {
