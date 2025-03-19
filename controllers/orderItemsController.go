@@ -20,7 +20,7 @@ type OrderItemPack struct {
 	Order_items []models.OrderItem
 }
 
-var orderItemCollection *mongo.Collection = database.OpenCollection(database.Client, "orderItem")
+var orderItemCollection *mongo.Collection = database.OpenCollection(database.Client, "order_items")
 
 func GetOrderItems() gin.HandlerFunc {
 
@@ -95,7 +95,7 @@ func ItemsByOrder(id string) (OrderItems []primitive.M, err error) {
 
 	lookupTableStage := bson.D{{Key: "$lookup", Value: bson.D{
 		{Key: "from", Value: "table"},
-		{Key: "localfield", Value: "order.table_id"},
+		{Key: "localField", Value: "order.table_id"},
 		{Key: "foreignField", Value: "table_id"},
 		{Key: "as", Value: "table"},
 	}}}
@@ -204,10 +204,10 @@ func CreateOrderItem() gin.HandlerFunc {
 
 		order.Order_Date, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 
-		orderItemsToBeInserted := []interface{}{}
-
 		order.Table_id = orderItemPack.Table_id
 		order_id := OrderItemOrderCreator(order)
+
+		orderItemsToBeInserted := []interface{}{}
 
 		for _, orderItem := range orderItemPack.Order_items {
 			orderItem.Order_id = order_id
