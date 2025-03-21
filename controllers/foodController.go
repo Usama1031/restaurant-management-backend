@@ -218,6 +218,27 @@ func UpdateFood() gin.HandlerFunc {
 	}
 }
 
+func DeleteFood() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		foodId := c.Param("food_id")
+
+		filter := bson.M{"food_id": foodId}
+
+		res, err := foodCollection.DeleteOne(ctx, filter)
+
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, res)
+
+	}
+}
+
 func round(num float64) int {
 	return int(num + math.Copysign(0.5, num))
 }

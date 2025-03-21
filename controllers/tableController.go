@@ -143,3 +143,24 @@ func UpdateTable() gin.HandlerFunc {
 		c.JSON(http.StatusOK, res)
 	}
 }
+
+func DeleteTable() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		tableId := c.Param("table_id")
+
+		filter := bson.M{"table_id": tableId}
+
+		res, err := foodCollection.DeleteOne(ctx, filter)
+
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, res)
+
+	}
+}

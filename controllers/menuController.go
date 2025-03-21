@@ -147,6 +147,27 @@ func UpdateMenu() gin.HandlerFunc {
 	}
 }
 
+func DeleteMenu() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		menuId := c.Param("menu_id")
+
+		filter := bson.M{"menu_id": menuId}
+
+		res, err := foodCollection.DeleteOne(ctx, filter)
+
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, res)
+
+	}
+}
+
 // func inTimeSpan(start, end, check time.Time) bool {
 // 	return start.After(time.Now()) && end.After(start)
 // }

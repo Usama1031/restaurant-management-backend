@@ -15,6 +15,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var orderCollection *mongo.Collection = database.OpenCollection(database.Client, "orders")
+
 type OrderItemPack struct {
 	Table_id    *string
 	Order_items []models.OrderItem
@@ -287,4 +289,46 @@ func UpdateOrderItem() gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, res)
 	}
+}
+
+// func DeleteOrderItem() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+// 		defer cancel()
+
+// 		foodId := c.Param("food_id")
+
+// 		filter := bson.M{"food_id": foodId}
+
+// 		res, err := foodCollection.DeleteOne(ctx, filter)
+
+// 		if err != nil {
+// 			log.Fatal(err)
+// 			return
+// 		}
+
+// 		c.JSON(http.StatusOK, res)
+
+// 	}
+// }
+
+func OrderItemOrderCreator(order models.Order) string {
+
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+
+	order.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	order.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+
+	order.ID = primitive.NewObjectID()
+	order.Order_id = order.ID.Hex()
+
+	_, err := orderCollection.InsertOne(ctx, order)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return order.Order_id
+
 }

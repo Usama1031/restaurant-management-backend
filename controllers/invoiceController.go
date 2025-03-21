@@ -200,3 +200,24 @@ func UpdateInvoice() gin.HandlerFunc {
 		c.JSON(http.StatusOK, res)
 	}
 }
+
+func DeleteInvoice() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		invoiceId := c.Param("invoice_id")
+
+		filter := bson.M{"invoice_id": invoiceId}
+
+		res, err := foodCollection.DeleteOne(ctx, filter)
+
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, res)
+
+	}
+}
