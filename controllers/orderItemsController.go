@@ -108,7 +108,6 @@ func ItemsByOrder(id string) (OrderItems []primitive.M, err error) {
 	}}}
 
 	projectStage := bson.D{{Key: "$project", Value: bson.D{
-		{Key: "id", Value: 0},
 		{Key: "amount", Value: "$food.price"},
 		{Key: "total_count", Value: 1},
 		{Key: "food_name", Value: "$food.name"},
@@ -138,7 +137,6 @@ func ItemsByOrder(id string) (OrderItems []primitive.M, err error) {
 	}}}
 
 	projectStage2 := bson.D{{Key: "$project", Value: bson.D{
-		{Key: "id", Value: 0},
 		{Key: "payment_due", Value: 1},
 		{Key: "total_count", Value: 1},
 		{Key: "table_number", Value: "$_id.table_number"},
