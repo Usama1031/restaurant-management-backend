@@ -156,7 +156,7 @@ func DeleteMenu() gin.HandlerFunc {
 
 		filter := bson.M{"menu_id": menuId}
 
-		res, err := foodCollection.DeleteOne(ctx, filter)
+		res, err := menuCollection.DeleteOne(ctx, filter)
 
 		if err != nil {
 			log.Fatal(err)

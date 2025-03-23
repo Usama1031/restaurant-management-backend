@@ -23,7 +23,7 @@ type InvoiceViewFormat struct {
 	Payment_due      interface{}
 	Table_number     interface{}
 	Payment_due_date time.Time
-	Orde_details     interface{}
+	Order_details    interface{}
 }
 
 var invoiceCollection *mongo.Collection = database.OpenCollection(database.Client, "invoice")
@@ -85,7 +85,7 @@ func GetInvoice() gin.HandlerFunc {
 
 		invoiceView.Payment_due = allOrderItems[0]["payment_due"]
 		invoiceView.Table_number = allOrderItems[0]["table_number"]
-		invoiceView.Orde_details = allOrderItems[0]["order_details"]
+		invoiceView.Order_details = allOrderItems[0]["order_details"]
 
 		c.JSON(http.StatusOK, invoiceView)
 
@@ -210,7 +210,7 @@ func DeleteInvoice() gin.HandlerFunc {
 
 		filter := bson.M{"invoice_id": invoiceId}
 
-		res, err := foodCollection.DeleteOne(ctx, filter)
+		res, err := invoiceCollection.DeleteOne(ctx, filter)
 
 		if err != nil {
 			log.Fatal(err)

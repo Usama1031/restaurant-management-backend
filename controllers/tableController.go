@@ -153,7 +153,7 @@ func DeleteTable() gin.HandlerFunc {
 
 		filter := bson.M{"table_id": tableId}
 
-		res, err := foodCollection.DeleteOne(ctx, filter)
+		res, err := tableCollection.DeleteOne(ctx, filter)
 
 		if err != nil {
 			log.Fatal(err)

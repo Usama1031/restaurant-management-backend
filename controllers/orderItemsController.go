@@ -84,7 +84,7 @@ func ItemsByOrder(id string) (OrderItems []primitive.M, err error) {
 	unwindStage := bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$food"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}}
 
 	lookupOrderStage := bson.D{{Key: "$lookup", Value: bson.D{
-		{Key: "from", Value: "order"},
+		{Key: "from", Value: "orders"},
 		{Key: "localField", Value: "order_id"},
 		{Key: "foreignField", Value: "order_id"},
 		{Key: "as", Value: "order"},
@@ -122,8 +122,12 @@ func ItemsByOrder(id string) (OrderItems []primitive.M, err error) {
 	groupStage := bson.D{{Key: "$group", Value: bson.D{
 		{Key: "_id", Value: bson.D{
 			{Key: "order_id", Value: "$order_id"},
-			{Key: "table_id", Value: "$table_id"},
-			{Key: "table_number", Value: "$table_number"},
+		}},
+		{Key: "table_number", Value: bson.D{
+			{Key: "$first", Value: "$table_number"},
+		}},
+		{Key: "table_id", Value: bson.D{
+			{Key: "$first", Value: "$table_id"},
 		}},
 		{Key: "payment_due", Value: bson.D{
 			{Key: "$sum", Value: "$amount"},
@@ -139,7 +143,8 @@ func ItemsByOrder(id string) (OrderItems []primitive.M, err error) {
 	projectStage2 := bson.D{{Key: "$project", Value: bson.D{
 		{Key: "payment_due", Value: 1},
 		{Key: "total_count", Value: 1},
-		{Key: "table_number", Value: "$_id.table_number"},
+		{Key: "table_number", Value: 1},
+		{Key: "table_id", Value: 1},
 		{Key: "order_items", Value: 1},
 	}}}
 
@@ -178,7 +183,7 @@ func GetOrderItem() gin.HandlerFunc {
 
 		var orderItem models.OrderItem
 
-		err := orderItemCollection.FindOne(ctx, bson.M{"orderItem_id": orderItemId}).Decode(&orderItem)
+		err := orderItemCollection.FindOne(ctx, bson.M{"order_item_id": orderItemId}).Decode(&orderItem)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occured while listing the order item."})
@@ -289,26 +294,48 @@ func UpdateOrderItem() gin.HandlerFunc {
 	}
 }
 
-// func DeleteOrderItem() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-// 		defer cancel()
+func DeleteOrderItem() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
 
-// 		foodId := c.Param("food_id")
+		orderItemId := c.Param("orderItem_id")
 
-// 		filter := bson.M{"food_id": foodId}
+		var orderItem models.OrderItem
+		err := orderItemCollection.FindOne(ctx, bson.M{"order_item_id": orderItemId}).Decode(&orderItem)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Order item not found"})
+			return
+		}
 
-// 		res, err := foodCollection.DeleteOne(ctx, filter)
+		filter := bson.M{"order_item_id": orderItemId}
+		res, err := orderItemCollection.DeleteOne(ctx, filter)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete order item"})
+			return
+		}
 
-// 		if err != nil {
-// 			log.Fatal(err)
-// 			return
-// 		}
+		count, err := orderItemCollection.CountDocuments(ctx, bson.M{"order_id": orderItem.Order_id})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check remaining order items"})
+			return
+		}
 
-// 		c.JSON(http.StatusOK, res)
+		if count == 0 {
+			orderFilter := bson.M{"order_id": orderItem.Order_id}
+			_, err := orderCollection.DeleteOne(ctx, orderFilter)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete order"})
+				return
+			}
 
-// 	}
-// }
+			c.JSON(http.StatusOK, gin.H{"message": "Order and all items deleted"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Order item deleted", "deleted_count": res.DeletedCount})
+	}
+}
 
 func OrderItemOrderCreator(order models.Order) string {
 
