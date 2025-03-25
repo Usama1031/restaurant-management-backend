@@ -79,13 +79,13 @@ Server will start at `http://localhost:8080`
 
 ### **Food Management**
 
-| Method | Endpoint        | Description                                     |
-| ------ | --------------- | ----------------------------------------------- |
-| GET    | /foods          | Get all food items from all menus               |
-| GET    | /foods/:food_id | Get info about a specific food item from a menu |
-| POST   | /foods          | Add a new food item to a menu                   |
-| PATCH  | /foods/:food_id | Update a food item in a menu                    |
-| Delete | /foods/:food_id | Delete a food item in a menu                    |
+| Method | Endpoint        | Description                        |
+| ------ | --------------- | ---------------------------------- |
+| GET    | /foods          | Get all food items from all menus  |
+| GET    | /foods/:food_id | Get a specific food item from menu |
+| POST   | /foods          | Add a new food item to menu        |
+| PATCH  | /foods/:food_id | Update a food item in menu         |
+| Delete | /foods/:food_id | Delete a food item in menu         |
 
 ### **Table Management**
 
@@ -97,7 +97,7 @@ Server will start at `http://localhost:8080`
 | PATCH  | /tables/:table_id | Update table status             |
 | DELTE  | /tables/:table_id | Delete a table status           |
 
-### **Order Item Management**
+### **Order Item & Order Management**
 
 | Method | Endpoint                    | Description                             |
 | ------ | --------------------------- | --------------------------------------- |
