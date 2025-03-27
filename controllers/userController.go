@@ -189,6 +189,8 @@ func Login() gin.HandlerFunc {
 
 		token, refreshToken, _ := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.First_name, *foundUser.Last_name, foundUser.User_id)
 
+		c.SetCookie("token", token, 3600, "/", "", false, true)
+
 		helpers.UpdateAllTokens(token, refreshToken, foundUser.User_id)
 
 		c.JSON(http.StatusOK, foundUser)
