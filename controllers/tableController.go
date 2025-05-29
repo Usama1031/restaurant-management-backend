@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"golang-restaurant-management/database"
+	"golang-restaurant-management/helpers"
 	"golang-restaurant-management/models"
 	"log"
 	"net/http"
@@ -22,6 +23,11 @@ func GetTables() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
+
+		if err := helpers.CheckUserType(c, "ADMIN"); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		res, err := tableCollection.Find(ctx, bson.M{})
 

@@ -26,6 +26,11 @@ func GetUsers() gin.HandlerFunc {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 
+		if err := helpers.CheckUserType(c, "ADMIN"); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		recordPerPage, err := strconv.Atoi(c.Query("recordPerPage"))
 
 		if err != nil || recordPerPage < 1 {
@@ -77,6 +82,11 @@ func GetUser() gin.HandlerFunc {
 		defer cancel()
 
 		userId := c.Param("user_id")
+
+		if err := helpers.MatchUserTypeToUid(c, userId); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		var user models.User
 
@@ -135,7 +145,7 @@ func SignUp() gin.HandlerFunc {
 		user.ID = primitive.NewObjectID()
 		user.User_id = user.ID.Hex()
 
-		var token, refreshToken, _ = helpers.GenerateAllTokens(*user.Email, *user.First_name, *user.Last_name, user.User_id)
+		var token, refreshToken, _ = helpers.GenerateAllTokens(*user.Email, *user.First_name, *user.Last_name, user.User_id, *user.User_type)
 
 		user.Token = &token
 
@@ -187,7 +197,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		token, refreshToken, _ := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.First_name, *foundUser.Last_name, foundUser.User_id)
+		token, refreshToken, _ := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.First_name, *foundUser.Last_name, foundUser.User_id, *foundUser.User_type)
 
 		c.SetCookie("token", token, 3600, "/", "", false, true)
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"golang-restaurant-management/database"
+	"golang-restaurant-management/helpers"
 	"golang-restaurant-management/models"
 	"log"
 	"math"
@@ -86,6 +87,7 @@ func GetFood() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
+
 		foodId := c.Param("food_id")
 		var food models.Food
 		err := foodCollection.FindOne(ctx, bson.M{"food_id": foodId}).Decode(&food)
@@ -101,6 +103,11 @@ func CreateFood() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
+
+		if err := helpers.CheckUserType(c, "ADMIN"); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		var food models.Food
 		var menu models.Menu
@@ -148,6 +155,11 @@ func UpdateFood() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
+
+		if err := helpers.CheckUserType(c, "ADMIN"); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		var menu models.Menu
 		var food models.Food
@@ -222,6 +234,11 @@ func DeleteFood() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
+
+		if err := helpers.CheckUserType(c, "ADMIN"); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		foodId := c.Param("food_id")
 
