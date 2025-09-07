@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"golang-restaurant-management/database"
 	"golang-restaurant-management/helpers"
 	"golang-restaurant-management/models"
@@ -125,7 +124,7 @@ func CreateFood() gin.HandlerFunc {
 		err := menuCollection.FindOne(ctx, bson.M{"menu_id": food.Menu_id}).Decode(&menu)
 
 		if err != nil {
-			msg := fmt.Sprintf("Menu not found!")
+			msg := "Menu not found!"
 			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
 			return
 		}
@@ -141,7 +140,7 @@ func CreateFood() gin.HandlerFunc {
 
 		result, insertErr := foodCollection.InsertOne(ctx, food)
 		if insertErr != nil {
-			msg := fmt.Sprint("Food item was not created!")
+			msg := "Food item was not created!"
 			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
 			return
 		}
@@ -220,7 +219,7 @@ func UpdateFood() gin.HandlerFunc {
 		)
 
 		if err != nil {
-			msg := fmt.Sprint("Food item update failed!")
+			msg := "Food item update failed!"
 			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
 			return
 		}
