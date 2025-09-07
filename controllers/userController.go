@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"golang-restaurant-management/database"
 	"golang-restaurant-management/helpers"
 	"golang-restaurant-management/models"
@@ -222,7 +221,7 @@ func VerifyPassword(userPassword string, providedPassword string) (bool, string)
 	msg := ""
 
 	if err != nil {
-		msg = fmt.Sprintf("Email or passowrd is icorrect!")
+		msg = "Email or passowrd is icorrect!"
 		check = false
 	}
 

@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"context"
-	"fmt"
 	"golang-restaurant-management/database"
 	"log"
 	"os"
@@ -109,13 +108,13 @@ func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 	claims, ok := token.Claims.(*SignedDetails)
 
 	if !ok {
-		msg = fmt.Sprintf("The token is invalid!")
+		msg = "The token is invalid!"
 		msg = err.Error()
 		return
 	}
 
 	if claims.ExpiresAt.Time.Before(time.Now()) {
-		msg = fmt.Sprintf("Token is expired!")
+		msg = "Token is expired!"
 		return
 	}
 

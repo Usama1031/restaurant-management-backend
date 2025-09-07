@@ -150,7 +150,7 @@ func UpdateMenu() gin.HandlerFunc {
 		}, &opt)
 
 		if err != nil {
-			msg := fmt.Sprint("Menu update failed!")
+			msg := "Menu update failed!"
 			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
 			return
 		}
